@@ -1,0 +1,19 @@
+{
+  "name": "chalkboard-3d-portfolio",
+  "version": "1.0.0",
+  "description": "A complete procedural 3D chalkboard portfolio website using Vite and Three.js.",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "dev:lan": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1"
+  },
+  "dependencies": {
+    "three": "^0.184.0"
+  },
+  "devDependencies": {
+    "vite": "^8.0.9"
+  }
+}
