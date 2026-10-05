@@ -33,8 +33,6 @@ async function importGLTF(scene: THREE.Scene) {
   })
 
   scene.add( gltf.scene );
-  console.log("loaded gltf scene", scene);
-
 }
 
 async function loadAssets(scene: THREE.Scene) {

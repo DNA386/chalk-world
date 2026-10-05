@@ -1,5 +1,14 @@
-import { SECTIONS } from './consts'
+import { BASE_SECTIONS, INITIAL_SECTION } from './consts'
 import Environment from "./environment";
+
+export type SectionNavConf = {
+    label: string,
+    camera: {
+        position: number[],
+        target: number[],
+        fov: number
+    },
+}
 
 
 export default class SectionNav {
@@ -9,6 +18,8 @@ export default class SectionNav {
   hoveredPaperTitle: string | null;
   navControls: Array<HTMLElement>;
   environment: Environment;
+  allSections: {[k: string]: SectionNavConf}
+  shortcuts: {[k: string]: string}
 
   constructor(environment: Environment) {
     this.activeSection = 'overview';
@@ -18,27 +29,40 @@ export default class SectionNav {
     this.navControls = [...document.querySelectorAll('[data-section]')];
 
     this.environment = environment;
+    this.initSubsections([])
 
-    const initialSection = this.validSectionFromHash() ?? 'overview';
+    const initialSection = this.validSectionFromHash() ?? INITIAL_SECTION;
     this.environment.camera.setCameraBase(
-      this.environment.camera.getCameraState(initialSection)
+      this.environment.camera.getCameraState(initialSection, this.allSections[initialSection])
     );
     this.goToSection(initialSection, { immediate: true, updateHash: false });
+
+    window.addEventListener('keyup', (event) => this.resolveKeyboardNav(event))
+
+  }
+
+  initSubsections(subsections: SectionNavConf[]) {
+    this.allSections = subsections.reduce((o, section) => {
+      return { ...o, [section.label]: section}
+    }, BASE_SECTIONS)
+
+    this.shortcuts = Object.entries(this.allSections).reduce((o, [key, sec]) => {
+      return {...o, [sec.shortcut]: key}
+    }, {})
   }
 
   goToSection(
     sectionName,
     options: { immediate: boolean, updateHash: boolean } = { immediate: true, updateHash: false}
   ) {
-    if (!SECTIONS[sectionName]) return;
+    if (!this.allSections[sectionName]) return;
 
     const { immediate, updateHash } = options;
-    const targetState = this.environment.camera.getCameraState(sectionName);
+    const targetState = this.environment.camera.getCameraState(sectionName, this.allSections[sectionName]);
     const duration = this.environment.prefersReducedMotion || immediate ? 0 : 1320;
 
     this.activeSection = sectionName;
     this.updateNavigation();
-    // this.environment.updateHighlights();
 
     // if (statusText) {
     //   const section = SECTIONS[sectionName];
@@ -74,7 +98,18 @@ export default class SectionNav {
 
   validSectionFromHash() {
     const hash = window.location.hash.replace('#', '').trim();
-    return SECTIONS[hash] ? hash : null;
+    return this.allSections[hash] ? hash : null;
   }
 
-}
+  resolveKeyboardNav(event: KeyboardEvent) {
+    if (Object.keys(this.shortcuts).includes(event.key)) {
+      this.goToSection(this.shortcuts[event.key], {immediate: false, updateHash: true});
+    }
+  }
+
+  handleSectionClicked(event: {type: string, section: string, index: number}) {
+    // Turn it into a key event
+    const keyEvent = new KeyboardEvent("keyup", {key: `${event.index ?? BASE_SECTIONS[INITIAL_SECTION].shortcut}`})
+    this.resolveKeyboardNav(keyEvent)
+  }
+ }

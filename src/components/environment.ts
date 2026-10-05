@@ -1,11 +1,11 @@
 import * as THREE from 'three';
 
-import Camera, { CameraTransition } from './camera';
+import Camera from './camera';
 import Renderer from './renderer';
 import BlackboardContent from "./blackboard";
 import DustField from "./dust";
 import {addLights, Highlight} from "./lights";
-import { BOARD, NAVIGATION } from "./consts"
+import { BOARD, NAVIGATION, INITIAL_SECTION } from "./consts"
 
 let instance: boolean = false;
 
@@ -36,18 +36,8 @@ export default class Environment {
     }
     instance = true;
 
-    // Global access
-    //@ts-ignore
-    // window.Application = this;
-
     this.clock = new THREE.Timer();
 
-    // Setup
-    // this.debug = new Debug();
-    // this.sizes = new Sizes();
-    // this.mouse = new Mouse();
-    // this.loading = new Loading();
-    // this.time = new Time();
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color("#050706");
     this.scene.fog = new THREE.FogExp2("#070a08", 0.026);
@@ -67,19 +57,6 @@ export default class Environment {
     // this.resources = new Resources(sources);
     this.camera = new Camera(this.prefersReducedMotion);
     this.renderer = new Renderer(this);
-    // this.renderer = new THREE.WebGLRenderer({
-    //   canvas: this.canvas,
-    //   antialias: true,
-    //   powerPreference: 'high-performance',
-    // });
-    // this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    // this.renderer.setSize(window.innerWidth, window.innerHeight);
-    // this.renderer.outputColorSpace = THREE.SRGBColorSpace;
-    // this.renderer.shadowMap.enabled = true;
-    // this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    // this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    // this.renderer.toneMappingExposure = 1.03;
-
 
     this.raycaster = new THREE.Raycaster();
     this.interactiveMeshes = [];
@@ -93,74 +70,13 @@ export default class Environment {
     addLights(this.scene);
     this.highlight = new Highlight(this.scene);
 
-    console.log("added lights", this.scene)
-
     // Call only once this has been sufficiently well populated
     this.blackboard = new BlackboardContent(this);
-
-    //
-    //   // Importing these from blender
-    //   // addRoomBackdrop();
-    //   // addFrameAndProps();
-    //
-    //   addBoard();
-    //
-    //   // exportBlender();
-    //
-    //   addSections();
-    //   addOverviewEmailImage();
-    //   dustField = createDustField();
-    //
-    //   const initialSection = validSectionFromHash() ?? 'overview';
-    //   setCameraBase(getCameraState(initialSection));
-    //   goToSection(initialSection, { immediate: true, updateHash: false });
-    //
-    //   window.addEventListener('resize', onResize);
-    //   canvas.addEventListener('pointermove', onPointerMove);
-    //   canvas.addEventListener('pointerleave', () => {
-    //     hoveredPaperUrl = null;
-    //     hoveredPaperTitle = null;
-    //     setHoveredSection(null);
-    //   });
-    //   canvas.addEventListener('click', onCanvasClick);
-    //   document.addEventListener('keydown', onKeyDown);
-    //
-    //   navControls.forEach((control) => {
-    //     control.addEventListener('click', (event) => {
-    //       event.preventDefault();
-    //       const sectionName = control.dataset.section;
-    //       goToSection(sectionName);
-    //     });
-    //   });
-    // }
-
-
-    // this.camera.createControls();
-    // this.world = new World();
-
-    // this.ui = new UI();
-
-    // const urlParams = new URLSearchParams(window.location.search);
-    // if (urlParams.has('debug')) {
-    //   this.stats = new Stats();
-    //   this.stats.showPanel(0);
-    //
-    //   document.body.appendChild(this.stats.dom);
-    // }
 
     // Resize event
     window.addEventListener('resize', () => this.resize())
     window.addEventListener('pointermove', (e) => this.onPointerMove(e));
     window.addEventListener('click', (e) => this.onClick(e));
-
-    // this.sizes.on('resize', () => {
-    //   this.resize();
-    // });
-
-    // // Time tick event
-    // this.time.on('tick', () => {
-    //   this.update();
-    // });
   }
 
   resize() {
@@ -191,7 +107,10 @@ export default class Environment {
         type: "navigate",
         destination: NAVIGATION[this.hovered.object.name].url,
       })
+    } else {
+      this.blackboard.sectionNav.goToSection(INITIAL_SECTION, {immediate: false, updateHash: true})
     }
+
   }
 
   init() {
@@ -218,27 +137,5 @@ export default class Environment {
     this.clock.update()
 
     requestAnimationFrame(() => this.animate());
-  }
-
-  destroy() {
-    // Traverse the whole scene
-    this.scene.traverse((child) => {
-      // Test if it's a mesh
-      if (child instanceof THREE.Mesh) {
-        child.geometry.dispose();
-
-        // Loop through the material properties
-        for (const key in child.material) {
-          const value = child.material[key];
-
-          // Test if there is a dispose function
-          if (value && typeof value.dispose === 'function') {
-            value.dispose();
-          }
-        }
-      }
-    });
-
-    this.renderer.instance.dispose();
   }
 }

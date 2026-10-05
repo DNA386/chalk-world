@@ -1,7 +1,8 @@
 import * as THREE from 'three';
 
 import { easeInOutCubic } from "../utils/utils";
-import { SECTIONS, BOARD } from './consts'
+import { BOARD } from './consts'
+import {SectionNavConf} from "./sectionNav";
 
 export type CameraTransition = {
   start: number,
@@ -46,12 +47,12 @@ export default class Camera {
     this.prefersReducedMotion = prefersReducedMotion;
   }
 
-  resize(immediate: boolean = true, activeSection: string) {
+  resize(immediate: boolean = true, activeSection: {name: string, section: SectionNavConf}) {
     this.camera.aspect = window.innerWidth / window.innerHeight;
     this.camera.updateProjectionMatrix();
 
     if (immediate) {
-      this.setCameraBase(this.getCameraState(activeSection));
+      this.setCameraBase(this.getCameraState(activeSection.name, activeSection.section));
     }
   }
 
@@ -106,8 +107,7 @@ export default class Camera {
     } as CameraState;
   }
 
-  getCameraState(sectionName) {
-    const section = SECTIONS[sectionName];
+  getCameraState(sectionName, section) {
     const position = new THREE.Vector3(...section.camera.position);
     const target = new THREE.Vector3(...section.camera.target);
     let fov = section.camera.fov;
