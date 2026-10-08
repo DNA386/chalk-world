@@ -42,7 +42,7 @@ export default class BlackboardContent {
         container.style.width = this.boardSize.width + 'px';
         container.style.height = this.boardSize.height + 'px';
         container.style.opacity = '1';
-        container.style.background = '#1d2e2f';
+        container.style.background = '#0C140B';
 
         // Create iframe
         this.iframe = document.createElement('iframe');
@@ -96,6 +96,7 @@ export default class BlackboardContent {
                     } else if (event.data.type === 'keyup') {
                         // @ts-ignore
                         evt.key = event.data.key;
+                        this.sectionNav.resolveKeyboardNav(event.data)
                     }
 
                     this.iframe.dispatchEvent(evt);
@@ -104,7 +105,7 @@ export default class BlackboardContent {
         };
 
         // Set iframe attributes
-        this.iframe.src = BOARD.url;
+        this.iframe.src = BOARD.initialUrl;
         this.iframe.style.width = this.boardSize.width + 'px';
         this.iframe.style.height = this.boardSize.height + 'px';
         this.iframe.style.padding = '0px';
@@ -159,6 +160,7 @@ export default class BlackboardContent {
                 color: `#` + item.material.color.getHexString(),
             }
         })
+        // console.log(JSON.stringify(navDetails))
         this.messageBoard({type: "setup-nav", navigation: navDetails})
     }
 

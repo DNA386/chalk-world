@@ -81,7 +81,10 @@ export default class Environment {
 
   resize() {
     this.renderer.resize()
-    this.camera.resize(true, this.blackboard.sectionNav.activeSection)
+    this.camera.resize(true, {
+      name: this.blackboard.sectionNav.activeSection,
+      section: this.blackboard.sectionNav.allSections[this.blackboard.sectionNav.activeSection]
+    })
   }
 
   onPointerMove(event: PointerEvent) {
@@ -93,7 +96,7 @@ export default class Environment {
 
     this.raycaster.setFromCamera(this.pointer, this.camera.camera);
     this.hovered = this.raycaster.intersectObjects(this.interactiveMeshes, false)[0];
-    const wallHit: THREE.Intersection = this.raycaster.intersectObjects([this.wall], false)[0];
+    const wallHit: THREE.Intersection | undefined = this.wall ? this.raycaster.intersectObjects([this.wall], false)[0] : undefined;
     if (wallHit) {
       this.pointer3D.copy(wallHit?.point)
     }

@@ -6,7 +6,8 @@ export const BOARD = {
     frame: 0.42,
     depth: 0.1,
     pixelRatio: 100,
-    url: 'http://localhost:3000'
+    url: 'http://localhost:3000',
+    initialUrl: 'http://localhost:3000/world',
 };
 
 export const NAVIGATION = {
@@ -19,33 +20,33 @@ export const NAVIGATION = {
 
 export const INITIAL_SECTION = 'overview'
 export const BASE_SECTIONS = {
-    debug:  {
-        label: 'Debug',
-        camera: {
-            position: [-20.0, 0, 10],
-            target: [0.0, 0, 5.0],
-            fov: 40,
-        },
-        shortcut: "d"
-    },
-    debug2:  {
-        label: 'Debug2',
-        camera: {
-            position: [10.0, 0, 20],
-            target: [0.0, 0, 5.0],
-            fov: 40,
-        },
-        shortcut: "e"
-    },
-    far:  {
-        label: 'far',
-        camera: {
-            position: [10, 5, 30],
-            target: [0.0, 0, 5.0],
-            fov: 20,
-        },
-        shortcut: "f"
-    },
+    // debug:  {
+    //     label: 'Debug',
+    //     camera: {
+    //         position: [-20.0, 0, 10],
+    //         target: [0.0, 0, 5.0],
+    //         fov: 40,
+    //     },
+    //     shortcut: "d"
+    // },
+    // debug2:  {
+    //     label: 'Debug2',
+    //     camera: {
+    //         position: [10.0, 0, 20],
+    //         target: [0.0, 0, 5.0],
+    //         fov: 40,
+    //     },
+    //     shortcut: "e"
+    // },
+    // far:  {
+    //     label: 'far',
+    //     camera: {
+    //         position: [10, 5, 30],
+    //         target: [0.0, 0, 5.0],
+    //         fov: 20,
+    //     },
+    //     shortcut: "f"
+    // },
 
     overview: {
         label: 'Board',

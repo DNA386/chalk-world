@@ -1,5 +1,4 @@
 import * as THREE from "three";
-import Camera from "./camera";
 
 
 export function addLights(scene: THREE.Scene) {

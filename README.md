@@ -20,20 +20,18 @@ the eraser. Adding extra items will require modifying the blender scene and re-b
 To allow the connection between the world and the chalkboard insides,
 you must specify the correct `BOARD.url`- without this it is not possible to establish the message connection.
 
-In `src/main.js` 
-
-Each section has:
-
-- `label`: name in the navigation
-- `x`, `y`: where the section sits on the board
-- `w`, `h`: clickable/text plane size
-- `title` and `lines`: chalk writing
+Viewing angles are constructed from the `BASE_SECTIONS` object. Note that viewing of the chalkboard content
+sections is computed automatically and appended dynamically.
+Initially, only the zoomed out main view is included. Each key should contain the following info:
+- `label` name (I don't think this shows up anywhere for the user any more though)
 - `camera.position`: where the camera moves
 - `camera.target`: where the camera looks
 - `camera.fov`: zoom feel
+- `shortcut`: a single character shortcut key to navigate to this section
 
 ## Controls
 
-- Click the section buttons.
+- Click the navigable items.
 - Click chalk writing on the board.
-- Use keyboard shortcuts: `1` through `5`.
+- Use keyboard shortcuts: as specified in `BASE_SECTIONS`, and numbers for the sections.
+- If more than 8 sections are defined there will likely be a problem as the shortcut key will overflow.
