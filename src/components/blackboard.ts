@@ -52,7 +52,6 @@ export default class BlackboardContent {
             if (this.iframe.contentWindow) {
                 // Receive events from inside the iframe
                 window.addEventListener('message', (event) => {
-                    console.log("recieved a message", event.origin, event.origin === BOARD.url, event.data?.type)
                     if (event.origin !== BOARD.messageUrl) return;
 
                     if (event.data.type === 'nav-setup-request') {
