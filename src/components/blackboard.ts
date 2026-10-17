@@ -53,7 +53,7 @@ export default class BlackboardContent {
                 // Receive events from inside the iframe
                 window.addEventListener('message', (event) => {
                     console.log("recieved a message", event.origin, event.origin === BOARD.url, event.data?.type)
-                    if (event.origin !== BOARD.url) return;
+                    if (event.origin !== BOARD.messageUrl) return;
 
                     if (event.data.type === 'nav-setup-request') {
                         this.configureNavigation()
@@ -140,7 +140,7 @@ export default class BlackboardContent {
     messageBoard(message) {
         this.iframe.contentWindow.postMessage(
           message,
-          BOARD.url
+          BOARD.messageUrl
         )
     }
 

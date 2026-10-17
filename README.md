@@ -25,7 +25,8 @@ The local env config should not be pushed.
 ```
 # .env.local
 VITE_WORLD_URL=http://127.0.0.1:5173/
-VITE_BOARD_URL=http://localhost:3000
+VITE_BOARD_URL=http://localhost:3000/world
+VITE_BOARD_MESSAGE_URL=http://localhost:3000
 ```
 
 Viewing angles are constructed from the `BASE_SECTIONS` object. Note that viewing of the chalkboard content

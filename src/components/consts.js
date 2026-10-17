@@ -6,8 +6,8 @@ export const BOARD = {
     frame: 0.42,
     depth: 0.1,
     pixelRatio: 100,
-    url: import.meta.env.VITE_BOARD_URL,
-    initialUrl: import.meta.env.VITE_BOARD_URL + '/world',
+    messageUrl: import.meta.env.VITE_BOARD_MESSAGE_URL,
+    initialUrl: import.meta.env.VITE_BOARD_URL,
 };
 
 export const NAVIGATION = {
