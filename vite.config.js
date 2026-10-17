@@ -2,5 +2,6 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
   base: './',
-  build: {target: 'es2017'}
+  build: {target: 'es2020'},
+  assetsInclude: ['**/*.gltf'],
 });
