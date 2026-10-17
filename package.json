@@ -8,6 +8,7 @@
     "dev": "vite --host 127.0.0.1",
     "dev:lan": "vite --host 0.0.0.0",
     "build": "vite build",
+    "build_pages": "vite build --base=/chalk-world/",
     "preview": "vite preview --host 127.0.0.1"
   },
   "dependencies": {
