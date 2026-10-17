@@ -19,6 +19,14 @@ the eraser. Adding extra items will require modifying the blender scene and re-b
 
 To allow the connection between the world and the chalkboard insides,
 you must specify the correct `BOARD.url`- without this it is not possible to establish the message connection.
+Due to the way deployment works (via github pages), this is done via `.env` files. 
+For local development, create `.env.local` which will override the global `.env` file.
+The local env config should not be pushed.
+```
+# .env.local
+VITE_WORLD_URL=http://127.0.0.1:5173/
+VITE_BOARD_URL=http://localhost:3000
+```
 
 Viewing angles are constructed from the `BASE_SECTIONS` object. Note that viewing of the chalkboard content
 sections is computed automatically and appended dynamically.

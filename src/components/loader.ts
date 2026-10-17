@@ -5,7 +5,6 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 
 async function importGLTF(scene: THREE.Scene) {
   const loader = new GLTFLoader();
-  console.log("base url", import.meta.env.BASE_URL)
   const gltf = await loader.loadAsync(import.meta.env.BASE_URL + 'blender_scene.gltf');
 
   gltf.scene.children.forEach(child => {
