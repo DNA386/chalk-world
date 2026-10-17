@@ -46,7 +46,7 @@ a {
   display: block;
   width: 100vw;
   height: 100vh;
-  cursor: url(images/cursor.png), default;
+  cursor: url(./img/cursor.png), default;
 }
 #css {
   position: fixed;
@@ -54,7 +54,7 @@ a {
   display: block;
   width: 500px;
   height: 300px;
-  cursor: url(images/cursor.png), default;
+  cursor: url(./img/cursor.png), default;
   mix-blend-mode: multiply;
 }
 
