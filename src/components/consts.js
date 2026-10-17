@@ -1,13 +1,14 @@
+const DEV = false
 
-export const WORLD_URL  = "http://127.0.0.1:5173/"
+export const WORLD_URL  = DEV ? "http://127.0.0.1:5173/" : "https://dna386.github.io/chalk-world"
 export const BOARD = {
     width: 14.8,
     height: 8.9,
     frame: 0.42,
     depth: 0.1,
     pixelRatio: 100,
-    url: 'http://localhost:3000',
-    initialUrl: 'http://localhost:3000/world',
+    url: DEV ? 'http://localhost:3000' : 'https://dna386.github.io/chalk-board',
+    initialUrl: DEV ? 'http://localhost:3000/world' : 'https://dna386.github.io/chalk-board/world',
 };
 
 export const NAVIGATION = {
