@@ -1,10 +1,10 @@
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 
 
 async function importGLTF(scene: THREE.Scene) {
   const loader = new GLTFLoader();
-  const gltf = await loader.loadAsync( 'src/public/blender_scene.gltf' );
+  const gltf = await loader.loadAsync('/blender_scene.gltf');
 
   gltf.scene.children.forEach(child => {
     if (child.name !== "wall") {
