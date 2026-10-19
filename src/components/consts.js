@@ -15,6 +15,7 @@ export const NAVIGATION = {
     chalk1: { desc: "Map", url: "/mindmap" },
     chalk2: { desc: "Papers", url: "/papers" },
     chalk3: { desc: "Experience", url: "/experience" },
+    drawingChalk: { desc: "Draw", url: "/draw" },
 }
 
 

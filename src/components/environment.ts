@@ -6,6 +6,7 @@ import BlackboardContent from "./blackboard";
 import DustField from "./dust";
 import {addLights, Highlight} from "./lights";
 import { BOARD, NAVIGATION, INITIAL_SECTION } from "./consts"
+import addDrawingNavigation from './drawingNavigation';
 
 let instance: boolean = false;
 
@@ -105,6 +106,7 @@ export default class Environment {
   }
 
   onClick(event: PointerEvent) {
+    this.onPointerMove(event);
     if (this.hovered) {
       this.blackboard.messageBoard({
         type: "navigate",
@@ -118,6 +120,7 @@ export default class Environment {
 
   init() {
     // Gl scene elements have now been loaded.
+    addDrawingNavigation(this.scene);
     this.blackboard.alignCssPlane()
     this.scene.traverse((element) => {
       // Physical objects linked to navigation in the blackboard site
@@ -126,6 +129,7 @@ export default class Environment {
       }
     })
     this.wall = this.scene.getObjectByName("wall");
+    this.blackboard.configureNavigation();
   }
 
   animate() {

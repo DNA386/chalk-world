@@ -3,7 +3,7 @@ import { CSS3DObject } from 'three/examples/jsm/renderers/CSS3DRenderer.js';
 import Camera from "./camera";
 import Environment from "./environment";
 import SectionNav, { SectionNavConf } from "./sectionNav";
-import { BOARD, NAVIGATION } from "./consts"
+import { BOARD, NAVIGATION, INITIAL_SECTION } from "./consts"
 
 type NavDetail = {
     pointTarget: {x: number; y: number};
@@ -33,6 +33,11 @@ export default class BlackboardContent {
 
         // Section handling
         this.sectionNav = new SectionNav(this.environment);
+        window.addEventListener('keyup', (event) => {
+            if (this.camera.drawingMode && Object.keys(this.sectionNav.shortcuts).includes(event.key)) {
+                event.stopImmediatePropagation();
+            }
+        }, true);
         this.createIframe();
     }
 
@@ -48,60 +53,70 @@ export default class BlackboardContent {
         this.iframe = document.createElement('iframe');
 
         // Bubble mouse move events to the main application, so we can affect the camera
-        this.iframe.onload = () => {
-            if (this.iframe.contentWindow) {
-                // Receive events from inside the iframe
-                window.addEventListener('message', (event) => {
-                    if (event.origin !== BOARD.messageUrl) return;
+        // Receive events from inside the iframe
+        window.addEventListener('message', (event) => {
+            if (event.origin !== BOARD.messageUrl || event.source !== this.iframe.contentWindow) return;
+            if (!event.data || typeof event.data.type !== 'string') return;
 
-                    if (event.data.type === 'nav-setup-request') {
-                        this.configureNavigation()
-                        return;
-                    }
-
-                    if (event.data.type === 'section-nav-setup') {
-                        this.configureSections(event.data.sections)
-                        return;
-                    }
-
-                    if (event.data.type === 'section-clicked') {
-                        this.sectionNav.handleSectionClicked(event.data)
-                    }
-
-                    var evt = new CustomEvent(event.data.type, {
-                        bubbles: true,
-                        cancelable: false,
-                    });
-
-                    // @ts-ignore
-                    evt.inBlackboard = true;
-                    if (event.data.type === 'pointermove') {
-                        var clRect = this.iframe.getBoundingClientRect();
-                        const { top, left, width, height } = clRect;
-                        const widthRatio = width / this.boardSize.width;
-                        const heightRatio = height / this.boardSize.height;
-
-                        // @ts-ignore
-                        evt.clientX = Math.round(
-                            event.data.clientX * widthRatio + left
-                        );
-                        //@ts-ignore
-                        evt.clientY = Math.round(
-                            event.data.clientY * heightRatio + top
-                        );
-                    } else if (event.data.type === 'keydown') {
-                        // @ts-ignore
-                        evt.key = event.data.key;
-                    } else if (event.data.type === 'keyup') {
-                        // @ts-ignore
-                        evt.key = event.data.key;
-                        this.sectionNav.resolveKeyboardNav(event.data)
-                    }
-
-                    this.iframe.dispatchEvent(evt);
-                });
+            if (event.data.type === 'drawing-mode') {
+                if (typeof event.data.active !== 'boolean') return;
+                if (event.data.active && !this.camera.drawingMode) {
+                    this.sectionNav.initSubsections([]);
+                    this.sectionNav.goToSection(INITIAL_SECTION, {immediate: true, updateHash: false});
+                }
+                this.camera.setDrawingMode(event.data.active);
+                return;
             }
-        };
+
+            if (event.data.type === 'nav-setup-request') {
+                this.configureNavigation()
+                return;
+            }
+
+            if (event.data.type === 'section-nav-setup') {
+                this.configureSections(event.data.sections)
+                return;
+            }
+
+            if (event.data.type === 'section-clicked') {
+                if (this.camera.drawingMode) return;
+                this.sectionNav.handleSectionClicked(event.data)
+            }
+
+            if (this.camera.drawingMode && (event.data.type === 'keyup' || event.data.type === 'keydown')) return;
+
+            var evt = new CustomEvent(event.data.type, {
+                bubbles: true,
+                cancelable: false,
+            });
+
+            // @ts-ignore
+            evt.inBlackboard = true;
+            if (event.data.type === 'pointermove') {
+                var clRect = this.iframe.getBoundingClientRect();
+                const { top, left, width, height } = clRect;
+                const widthRatio = width / this.boardSize.width;
+                const heightRatio = height / this.boardSize.height;
+
+                // @ts-ignore
+                evt.clientX = Math.round(
+                    event.data.clientX * widthRatio + left
+                );
+                //@ts-ignore
+                evt.clientY = Math.round(
+                    event.data.clientY * heightRatio + top
+                );
+            } else if (event.data.type === 'keydown') {
+                // @ts-ignore
+                evt.key = event.data.key;
+            } else if (event.data.type === 'keyup') {
+                // @ts-ignore
+                evt.key = event.data.key;
+                this.sectionNav.resolveKeyboardNav(event.data)
+            }
+
+            this.iframe.dispatchEvent(evt);
+        });
 
         // Set iframe attributes
         this.iframe.src = BOARD.initialUrl;
@@ -137,13 +152,15 @@ export default class BlackboardContent {
     }
 
     messageBoard(message) {
-        this.iframe.contentWindow.postMessage(
+        this.iframe.contentWindow?.postMessage(
           message,
           BOARD.messageUrl
         )
     }
 
     configureNavigation() {
+        if (Object.keys(NAVIGATION).some(key => !this.environment.scene.getObjectByName(key))) return;
+
         // Figure out where the relevant entities are relative to the board
         const navDetails: NavDetail[] = Object.entries(NAVIGATION).map(([key, value], i) => {
             const item = this.environment.scene.getObjectByName(key)
