@@ -26,6 +26,7 @@ export default class Camera {
   activeCameraBase: CameraState;
   prefersReducedMotion: boolean;
   transition: CameraTransition;
+  drawingMode: boolean;
 
   constructor(prefersReducedMotion: boolean = false) {
     this.camera = new THREE.PerspectiveCamera(
@@ -35,6 +36,7 @@ export default class Camera {
       80
     );
     this.transition = null;
+    this.drawingMode = false;
 
     this.activeCameraBase = {
       position: new THREE.Vector3(),
@@ -57,12 +59,16 @@ export default class Camera {
   }
 
   onPointerMove(pointer: THREE.Vector2) {
+    if (this.drawingMode) return;
+
     this.parallax.x = THREE.MathUtils.clamp(pointer.x, -1, 1);
     this.parallax.y = THREE.MathUtils.clamp(pointer.y, -1, 1);
   }
 
   update(now: number, elapsed: number) {
-    if (this.transition) {
+    if (this.drawingMode) {
+      this.transition = null;
+    } else if (this.transition) {
       const t = THREE.MathUtils.clamp((now - this.transition.start) / this.transition.duration, 0, 1);
       const eased = easeInOutCubic(t);
       this.activeCameraBase.position.lerpVectors(this.transition.from.position, this.transition.to.position, eased);
@@ -75,19 +81,29 @@ export default class Camera {
       }
     }
 
-    const idleAmount = this.prefersReducedMotion ? 0 : 1;
+    const idleAmount = this.prefersReducedMotion || this.drawingMode ? 0 : 1;
     this.finalCameraPosition.copy(this.activeCameraBase.position);
     this.finalCameraTarget.copy(this.activeCameraBase.target);
 
-    this.finalCameraPosition.x += this.parallax.x * 0.20 + Math.sin(elapsed * 0.45) * 0.025 * idleAmount;
-    this.finalCameraPosition.y += this.parallax.y * 0.155 + Math.cos(elapsed * 0.37) * 0.018 * idleAmount;
-    this.finalCameraTarget.x += this.parallax.x * 0.035;
-    this.finalCameraTarget.y += this.parallax.y * 0.025;
+    if (!this.drawingMode) {
+      this.finalCameraPosition.x += this.parallax.x * 0.20 + Math.sin(elapsed * 0.45) * 0.025 * idleAmount;
+      this.finalCameraPosition.y += this.parallax.y * 0.155 + Math.cos(elapsed * 0.37) * 0.018 * idleAmount;
+      this.finalCameraTarget.x += this.parallax.x * 0.035;
+      this.finalCameraTarget.y += this.parallax.y * 0.025;
+    }
 
     this.camera.position.copy(this.finalCameraPosition);
     this.camera.fov = this.activeCameraBase.fov;
     this.camera.updateProjectionMatrix();
     this.camera.lookAt(this.finalCameraTarget);
+  }
+
+  setDrawingMode(active: boolean) {
+    if (this.drawingMode === active) return;
+
+    this.drawingMode = active;
+    this.parallax.set(0, 0);
+    this.transition = null;
   }
 
   setCameraBase(state: CameraState) {

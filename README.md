@@ -17,6 +17,9 @@ This is done in `src/components/consts.js`: `NAVIGATION` defines the links betwe
 the 3D world and pages in the blackboard app. For now there are 3 chalks that can be linked up and
 the eraser. Adding extra items will require modifying the blender scene and re-baking the shadows.
 
+The drawing chalk reuses an existing mesh and its baked shading, so it is added in
+`src/components/drawingNavigation.ts` without changing the blender scene. It opens the `/draw` page in the blackboard app.
+
 To allow the connection between the world and the chalkboard insides,
 you must specify the correct `BOARD.url`- without this it is not possible to establish the message connection.
 Due to the way deployment works (via github pages), this is done via `.env` files. 
